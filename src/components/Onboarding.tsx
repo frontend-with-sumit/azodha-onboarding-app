@@ -1,15 +1,16 @@
+import { useStepper } from "@/hooks/useStepper"
 import { Box, Heading } from "@chakra-ui/react"
-import { useState } from "react"
+import PersonalProfile from "./PersonalProfile"
 
 const Onboarding = () => {
-  const [step] = useState(1)
+  const { activeStep, nextStep } = useStepper()
 
   return (
     <Box>
-      {step === 1 && <Heading as="h2">Personal Profile</Heading>}
-      {step === 2 && <Heading as="h2">Favorite Songs</Heading>}
-      {step === 3 && <Heading as="h2">Payment Method</Heading>}
-      {step === 4 && <Heading as="h2">Onboarding Complete</Heading>}
+      {activeStep === 1 && <PersonalProfile nextStep={nextStep} />}
+      {activeStep === 2 && <Heading as="h2">Favorite Songs</Heading>}
+      {activeStep === 3 && <Heading as="h2">Payment Method</Heading>}
+      {activeStep === 4 && <Heading as="h2">Onboarding Complete</Heading>}
     </Box>
   )
 }
