@@ -1,6 +1,7 @@
 import { Box, Button, Field, Input, VStack } from "@chakra-ui/react"
 import { useState, type ChangeEvent, type SubmitEvent } from "react"
 import { PasswordInput } from "./ui/password-input"
+import CompWithHeading from "./CompWithHeading"
 
 const CREDS = {
   username: "user123",
@@ -46,35 +47,37 @@ const Login = () => {
   }
 
   return (
-    <Box width="2xl">
-      <form onSubmit={handleSubmit} method="POST">
-        <VStack gap={4} alignItems="start">
-          <Field.Root invalid={errors.username}>
-            <Field.Label>Username</Field.Label>
-            <Input
-              placeholder="Username"
-              name="username"
-              value={form.username}
-              onChange={handleChange}
-            />
-            <Field.ErrorText>Invalid username</Field.ErrorText>
-          </Field.Root>
+    <CompWithHeading heading="Login">
+      <Box width="2xl">
+        <form onSubmit={handleSubmit} method="POST">
+          <VStack gap={4} alignItems="start">
+            <Field.Root invalid={errors.username}>
+              <Field.Label>Username</Field.Label>
+              <Input
+                placeholder="Username"
+                name="username"
+                value={form.username}
+                onChange={handleChange}
+              />
+              <Field.ErrorText>Invalid username</Field.ErrorText>
+            </Field.Root>
 
-          <Field.Root invalid={errors.password}>
-            <Field.Label>Password</Field.Label>
-            <PasswordInput
-              placeholder="Password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-            />
-            <Field.ErrorText>Invalid password</Field.ErrorText>
-          </Field.Root>
+            <Field.Root invalid={errors.password}>
+              <Field.Label>Password</Field.Label>
+              <PasswordInput
+                placeholder="Password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+              />
+              <Field.ErrorText>Invalid password</Field.ErrorText>
+            </Field.Root>
 
-          <Button type="submit">Submit</Button>
-        </VStack>
-      </form>
-    </Box>
+            <Button type="submit">Submit</Button>
+          </VStack>
+        </form>
+      </Box>
+    </CompWithHeading>
   )
 }
 

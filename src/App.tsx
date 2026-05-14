@@ -1,5 +1,7 @@
-import { Flex, Heading } from "@chakra-ui/react"
+import { Flex } from "@chakra-ui/react"
+import { Route, Routes } from "react-router"
 import Login from "./components/Login"
+import Onboarding from "./components/Onboarding"
 
 function App() {
   return (
@@ -11,10 +13,10 @@ function App() {
       justifyContent="center"
       alignItems="center"
     >
-      <Heading as="h1" fontSize="5xl" textDecoration="underline">
-        Azodha
-      </Heading>
-      <Login />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/onboarding" element={<Onboarding />} />
+      </Routes>
     </Flex>
   )
 }
