@@ -1,8 +1,8 @@
 import { Box, Button, Field, Input, VStack } from "@chakra-ui/react"
-import { useState, type ChangeEvent, type SubmitEvent } from "react"
-import { PasswordInput } from "./ui/password-input"
-import CompWithHeading from "./CompWithHeading"
+import { Form, Formik } from "formik"
 import { useNavigate } from "react-router"
+import CompWithHeading from "./CompWithHeading"
+import { PasswordInput } from "./ui/password-input"
 
 const CREDS = {
   username: "user123",
@@ -17,68 +17,70 @@ interface Form {
 const Login = () => {
   const navigate = useNavigate()
 
-  const [form, setForm] = useState<Form>({
-    username: "",
-    password: "",
-  })
-  const [errors, setErrors] = useState({
-    username: false,
-    password: false,
-  })
+  const validate = (values: Form) => {
+    const errors: Partial<Form> = {}
+    const userNameError = values.username !== CREDS.username
+    const passwordError = values.password !== CREDS.password
 
-  const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = evt.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-    setErrors((prev) => ({ ...prev, [name]: false }))
+    if (userNameError) errors["username"] = "Invalid username"
+    if (passwordError) errors["password"] = "Invalid password"
+
+    return errors
   }
 
-  const handleSubmit = (evt: SubmitEvent<HTMLFormElement>) => {
-    evt.preventDefault()
-
-    const usernameError = form.username !== CREDS.username
-    const passwordError = form.password !== CREDS.password
-
-    if (usernameError || passwordError)
-      return setErrors({
-        username: usernameError,
-        password: passwordError,
-      })
-
+  const handleSubmit = (values: Form) => {
+    console.log(values)
     // TODO:Update isAuth state in context and in localStorage
-
     navigate("/onboarding")
   }
 
   return (
     <CompWithHeading heading="Login">
       <Box width="2xl">
-        <form onSubmit={handleSubmit} method="POST">
-          <VStack gap={4} alignItems="start">
-            <Field.Root invalid={errors.username}>
-              <Field.Label>Username</Field.Label>
-              <Input
-                placeholder="Username"
-                name="username"
-                value={form.username}
-                onChange={handleChange}
-              />
-              <Field.ErrorText>Invalid username</Field.ErrorText>
-            </Field.Root>
+        <Formik
+          initialValues={{ username: "", password: "" }}
+          validate={validate}
+          validateOnChange={false}
+          onSubmit={(values: Form) => handleSubmit(values)}
+        >
+          {({ errors, values, handleChange, handleSubmit, setFieldError }) => (
+            <form onSubmit={handleSubmit}>
+              <VStack gap={4} alignItems="start">
+                <Field.Root invalid={!!errors.username}>
+                  <Field.Label>Username</Field.Label>
+                  <Input
+                    placeholder="Username"
+                    name="username"
+                    value={values.username}
+                    onChange={(evt) => {
+                      if (errors.username) setFieldError("username", "")
+                      handleChange(evt)
+                    }}
+                    autoComplete="username"
+                  />
+                  <Field.ErrorText>{errors.username}</Field.ErrorText>
+                </Field.Root>
 
-            <Field.Root invalid={errors.password}>
-              <Field.Label>Password</Field.Label>
-              <PasswordInput
-                placeholder="Password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-              />
-              <Field.ErrorText>Invalid password</Field.ErrorText>
-            </Field.Root>
+                <Field.Root invalid={!!errors.password}>
+                  <Field.Label>Password</Field.Label>
+                  <PasswordInput
+                    placeholder="Password"
+                    name="password"
+                    value={values.password}
+                    onChange={(evt) => {
+                      if (errors.password) setFieldError("password", "")
+                      handleChange(evt)
+                    }}
+                    autoComplete="password"
+                  />
+                  <Field.ErrorText>{errors.password}</Field.ErrorText>
+                </Field.Root>
 
-            <Button type="submit">Submit</Button>
-          </VStack>
-        </form>
+                <Button type="submit">Submit</Button>
+              </VStack>
+            </form>
+          )}
+        </Formik>
       </Box>
     </CompWithHeading>
   )
