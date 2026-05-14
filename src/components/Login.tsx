@@ -2,6 +2,7 @@ import { Box, Button, Field, Input, VStack } from "@chakra-ui/react"
 import { useState, type ChangeEvent, type SubmitEvent } from "react"
 import { PasswordInput } from "./ui/password-input"
 import CompWithHeading from "./CompWithHeading"
+import { useNavigate } from "react-router"
 
 const CREDS = {
   username: "user123",
@@ -14,6 +15,8 @@ interface Form {
 }
 
 const Login = () => {
+  const navigate = useNavigate()
+
   const [form, setForm] = useState<Form>({
     username: "",
     password: "",
@@ -41,9 +44,9 @@ const Login = () => {
         password: passwordError,
       })
 
-    // Login Success
-    // Update state in local storage and move to next step
-    alert("Login successful!")
+    // TODO:Update isAuth state in context and in localStorage
+
+    navigate("/onboarding")
   }
 
   return (
