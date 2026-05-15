@@ -2,6 +2,7 @@ import { useStepper } from "@/hooks/useStepper"
 import { Box, Heading } from "@chakra-ui/react"
 import PersonalProfile from "./PersonalProfile"
 import PaymentMethod from "./PaymentMethod"
+import OnboardingComplete from "./OnboardingComplete"
 
 const Onboarding = () => {
   const { activeStep, nextStep, previousStep } = useStepper()
@@ -17,7 +18,9 @@ const Onboarding = () => {
           showBackBtn
         />
       )}
-      {activeStep === 4 && <Heading as="h2">Onboarding Complete</Heading>}
+      {activeStep === 4 && (
+        <OnboardingComplete showBackBtn previousStep={previousStep} />
+      )}
     </Box>
   )
 }

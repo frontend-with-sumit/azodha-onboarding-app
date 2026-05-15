@@ -2,6 +2,8 @@ import { Button, Field, HStack, Input, VStack } from "@chakra-ui/react"
 import { Formik } from "formik"
 import CompWithHeading from "./CompWithHeading"
 import { hasErrors } from "@/utils/hasErrors"
+import { z } from "zod"
+import { zodValidator } from "@/utils/zodValidator"
 
 interface Props {
   showBackBtn?: boolean
@@ -16,26 +18,19 @@ interface Form {
   nameOnCard: string
 }
 
-const validate = (values: Form) => {
-  const errors: Partial<Form> = {}
-  const cleanCardNumber = values.cardNumber.toString().replace(/\s/g, "")
+const PaymentMethodSchema = z.object({
+  cardNumber: z
+    .string()
+    .transform((value) => value.replace(/\s/g, ""))
+    .pipe(z.string().regex(/^\d{16}$/, "Card number must be 16 digits")),
+  expiryDate: z
+    .string()
+    .regex(/^\d{2}\/\d{2}$/, "Expiry date must be in MM/YY format"),
 
-  if (!values.cardNumber) errors["cardNumber"] = "Card number is required"
-  else if (!/^\d{16}$/.test(cleanCardNumber.toString()))
-    errors["cardNumber"] = "Card number must be 16 digits"
+  cvv: z.string().regex(/^\d{3}$/, "CVV must be 3 digits"),
 
-  if (!values.expiryDate) errors["expiryDate"] = "Expiry date is required"
-  else if (!/^\d{2}\/\d{2}$/.test(values.expiryDate))
-    errors["expiryDate"] = "Expiry date must be in MM/YY format"
-
-  if (!values.cvv) errors["cvv"] = "CVV is required"
-  else if (!/^\d{3}$/.test(values.cvv.toString()))
-    errors["cvv"] = "CVV must be 3 digits"
-
-  if (!values.nameOnCard) errors["nameOnCard"] = "Name on card is required"
-
-  return errors
-}
+  nameOnCard: z.string().min(1, "Name on card is required"),
+})
 
 const formatCardNumber = (value: string) => {
   return value
@@ -66,7 +61,7 @@ const PaymentMethod = ({ nextStep, previousStep, showBackBtn }: Props) => {
           cvv: "",
           nameOnCard: "",
         }}
-        validate={validate}
+        validate={zodValidator(PaymentMethodSchema)}
         onSubmit={handleSubmit}
       >
         {({

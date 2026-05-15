@@ -2,11 +2,12 @@ import { Avatar, Button, Field, HStack, Input, VStack } from "@chakra-ui/react"
 import { Formik } from "formik"
 import CompWithHeading from "./CompWithHeading"
 import { hasErrors } from "@/utils/hasErrors"
+import { z } from "zod"
+import { zodValidator } from "@/utils/zodValidator"
 
 interface Props {
   nextStep: () => void
 }
-
 interface Form {
   fullname: string
   age: number | string
@@ -14,16 +15,15 @@ interface Form {
   avatar: string
 }
 
+const ProfileSchema = z.object({
+  fullname: z.string().nonempty("Full name is required"),
+  age: z
+    .number({ message: "Age is required" })
+    .nonnegative("Age should be positive"),
+  email: z.email().nonempty("Email is required"),
+})
+
 const PersonalProfile = ({ nextStep }: Props) => {
-  const validate = (values: Form) => {
-    const errors: Partial<Form> = {}
-    if (!values.fullname) errors["fullname"] = "Full name is required"
-    if (!values.age) errors["age"] = "Age is required"
-    if (!values.email) errors["email"] = "Email is required"
-
-    return errors
-  }
-
   const handleSubmit = (values: Form) => {
     console.log(values)
     // TODO: save the step data to context and localStorage
@@ -40,7 +40,7 @@ const PersonalProfile = ({ nextStep }: Props) => {
           email: "",
           avatar: "https://bit.ly/sage-adebayo",
         }}
-        validate={validate}
+        validate={zodValidator(ProfileSchema)}
         onSubmit={handleSubmit}
       >
         {({
