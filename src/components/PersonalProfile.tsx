@@ -1,6 +1,7 @@
 import { Avatar, Button, Field, HStack, Input, VStack } from "@chakra-ui/react"
 import { Formik } from "formik"
 import CompWithHeading from "./CompWithHeading"
+import { hasErrors } from "@/utils/hasErrors"
 
 interface Props {
   nextStep: () => void
@@ -46,6 +47,7 @@ const PersonalProfile = ({ nextStep }: Props) => {
           errors,
           values,
           touched,
+          dirty,
           handleSubmit,
           handleChange,
           setFieldError,
@@ -119,7 +121,11 @@ const PersonalProfile = ({ nextStep }: Props) => {
                 <Field.ErrorText>{errors.email}</Field.ErrorText>
               </Field.Root>
 
-              <Button type="submit" width="full">
+              <Button
+                type="submit"
+                width="full"
+                disabled={!dirty || hasErrors(errors)}
+              >
                 Save
               </Button>
             </VStack>
