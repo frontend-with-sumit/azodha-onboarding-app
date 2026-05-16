@@ -4,18 +4,13 @@ import CompWithHeading from "./CompWithHeading"
 import { hasErrors } from "@/utils/hasErrors"
 import { z } from "zod"
 import { zodValidator } from "@/utils/zodValidator"
+import { updatePaymentInfo, type PaymentMethod } from "@/store/onboardSlice"
+import { useAppDispatch, useAppSelector } from "@/hooks/useActions"
 
 interface Props {
   showBackBtn?: boolean
   nextStep: () => void
   previousStep: () => void
-}
-
-interface Form {
-  cardNumber: string | number
-  expiryDate: string
-  cvv: number | string
-  nameOnCard: string
 }
 
 const PaymentMethodSchema = z.object({
@@ -40,13 +35,19 @@ const formatCardNumber = (value: string) => {
 }
 
 const PaymentMethod = ({ nextStep, previousStep, showBackBtn }: Props) => {
-  const handleSubmit = (values: Form) => {
-    console.log(values)
+  const paymentInfo = useAppSelector((state) => state.onboarding.paymentMethod)
+  const dispatch = useAppDispatch()
 
-    // onSuccess callback to save the payment method details in context or localStorage can be added here
-
+  const handleSubmit = (values: PaymentMethod) => {
+    dispatch(updatePaymentInfo(values))
     nextStep()
   }
+
+  const invalidForm = (values: PaymentMethod) =>
+    !values.cardNumber ||
+    !values.cvv ||
+    !values.expiryDate ||
+    !values.nameOnCard
 
   return (
     <CompWithHeading
@@ -56,10 +57,10 @@ const PaymentMethod = ({ nextStep, previousStep, showBackBtn }: Props) => {
     >
       <Formik
         initialValues={{
-          cardNumber: "",
-          expiryDate: "",
-          cvv: "",
-          nameOnCard: "",
+          cardNumber: paymentInfo.cardNumber,
+          expiryDate: paymentInfo.expiryDate,
+          cvv: paymentInfo.cvv,
+          nameOnCard: paymentInfo.nameOnCard,
         }}
         validate={zodValidator(PaymentMethodSchema)}
         onSubmit={handleSubmit}
@@ -68,7 +69,6 @@ const PaymentMethod = ({ nextStep, previousStep, showBackBtn }: Props) => {
           errors,
           values,
           touched,
-          dirty,
           handleSubmit,
           handleChange,
           setFieldError,
@@ -168,7 +168,7 @@ const PaymentMethod = ({ nextStep, previousStep, showBackBtn }: Props) => {
               <Button
                 type="submit"
                 width="full"
-                disabled={!dirty || hasErrors(errors)}
+                disabled={invalidForm(values) || hasErrors(errors)}
               >
                 Save
               </Button>

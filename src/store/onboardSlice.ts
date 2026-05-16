@@ -13,7 +13,7 @@ export interface ISong {
   name: string
 }
 
-interface PaymentMethod {
+export interface PaymentMethod {
   cardNumber: string
   expiryDate: string
   cvv: string
@@ -72,7 +72,6 @@ const onboardSlice = createSlice({
     updatePaymentInfo: (state, action: PayloadAction<PaymentMethod>) => {
       state.paymentMethod = action.payload
     },
-
     completeOnboarding: (state) => {
       state.isCompleted = true
     },
