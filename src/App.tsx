@@ -1,8 +1,9 @@
 import { Flex } from "@chakra-ui/react"
-import { Route, Routes } from "react-router"
+import { Navigate, Route, Routes } from "react-router"
+import Dashboard from "./components/Dashboard"
+import ProtectedRoute from "./components/ProtectedRoute"
 import Login from "./components/Login"
 import Onboarding from "./components/Onboarding"
-import Dashboard from "./components/Dashboard"
 
 function App() {
   return (
@@ -15,9 +16,13 @@ function App() {
       alignItems="center"
     >
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
       </Routes>
     </Flex>
   )
