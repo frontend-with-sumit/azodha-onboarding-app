@@ -24,7 +24,7 @@ const PaymentMethodSchema = z.object({
 
   cvv: z.string().regex(/^\d{3}$/, "CVV must be 3 digits"),
 
-  nameOnCard: z.string().min(1, "Name on card is required"),
+  nameOnCard: z.string().min(1, "Name is required"),
 })
 
 const formatCardNumber = (value: string) => {
@@ -102,7 +102,7 @@ const PaymentMethod = ({ nextStep, previousStep, showBackBtn }: Props) => {
                 <Field.ErrorText>{errors.cardNumber}</Field.ErrorText>
               </Field.Root>
 
-              <HStack gap={4}>
+              <HStack gap={4} width="full">
                 <Field.Root
                   invalid={touched.expiryDate && !!errors.expiryDate}
                   required

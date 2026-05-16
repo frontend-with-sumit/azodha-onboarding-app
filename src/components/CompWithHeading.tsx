@@ -13,7 +13,7 @@ const CompWithHeading = ({
   children: React.ReactNode
 }) => {
   return (
-    <Flex direction="column" gap={10}>
+    <Flex direction="column" gap={10} width="550px">
       <VStack alignItems="flex-start" gap={4}>
         {showBack && (
           <Button
