@@ -1,6 +1,8 @@
 import { Button, Text, VStack } from "@chakra-ui/react"
 import { useNavigate } from "react-router"
 import CompWithHeading from "./CompWithHeading"
+import { useAppDispatch } from "@/hooks/useActions"
+import { completeOnboarding } from "@/store/onboardSlice"
 
 interface Props {
   previousStep: () => void
@@ -9,8 +11,12 @@ interface Props {
 
 const OnboardingComplete = ({ previousStep, showBackBtn }: Props) => {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
-  const gotoHome = () => navigate("/dashboard")
+  const gotoHome = () => {
+    dispatch(completeOnboarding())
+    navigate("/dashboard")
+  }
 
   return (
     <CompWithHeading
@@ -21,7 +27,7 @@ const OnboardingComplete = ({ previousStep, showBackBtn }: Props) => {
       <VStack gap={10} width="full">
         <Text>Congratulations!!! Your onboarding is complete</Text>
         <Button onClick={gotoHome} width="full">
-          Go to Home
+          Finish
         </Button>
       </VStack>
     </CompWithHeading>
