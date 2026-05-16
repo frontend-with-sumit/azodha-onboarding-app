@@ -37,7 +37,7 @@ const PersonalProfile = ({ nextStep }: Props) => {
     !values.name || !values.age || !values.email
 
   return (
-    <CompWithHeading heading="Personal Profile">
+    <CompWithHeading heading="Profile">
       <Formik
         initialValues={{
           name: profile.name,
@@ -64,7 +64,7 @@ const PersonalProfile = ({ nextStep }: Props) => {
                 <Avatar.Image src={values.profilePicture} />
               </Avatar.Root>
 
-              <HStack gap={2}>
+              <HStack gap={2} width="full">
                 <Field.Root invalid={touched.name && !!errors.name} required>
                   <Field.Label>
                     Full Name <Field.RequiredIndicator />

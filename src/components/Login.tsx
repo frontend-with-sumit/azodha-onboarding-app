@@ -94,7 +94,7 @@ const Login = () => {
                   <Field.ErrorText>{errors.password}</Field.ErrorText>
                 </Field.Root>
 
-                <Button type="submit">Submit</Button>
+                <Button type="submit">Login</Button>
               </VStack>
             </form>
           )}

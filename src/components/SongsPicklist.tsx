@@ -38,7 +38,7 @@ const SongsPicklist = ({ showBackBtn, nextStep, previousStep }: Props) => {
 
   return (
     <CompWithHeading
-      heading="Pick your favorite songs"
+      heading="Favorite songs"
       showBack={showBackBtn}
       onBack={previousStep}
     >
@@ -56,7 +56,7 @@ const SongsPicklist = ({ showBackBtn, nextStep, previousStep }: Props) => {
             <Field.Root>
               <Input
                 name="name"
-                placeholder="Search for a song"
+                placeholder="Enter song name"
                 value={values.name}
                 onChange={handleChange}
               />
