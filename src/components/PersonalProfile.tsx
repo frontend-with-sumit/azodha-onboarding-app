@@ -1,22 +1,22 @@
+import { useAppDispatch, useAppSelector } from "@/hooks/useActions"
+import {
+  updateCurrentStep,
+  updatePersonalProfile,
+  type PersonalProfile,
+} from "@/store/onboardSlice"
+import { hasErrors } from "@/utils/hasErrors"
+import { zodValidator } from "@/utils/zodValidator"
 import { Avatar, Button, Field, HStack, Input, VStack } from "@chakra-ui/react"
 import { Formik } from "formik"
-import CompWithHeading from "./CompWithHeading"
-import { hasErrors } from "@/utils/hasErrors"
 import { z } from "zod"
-import { zodValidator } from "@/utils/zodValidator"
+import CompWithHeading from "./CompWithHeading"
 
 interface Props {
   nextStep: () => void
 }
-interface Form {
-  fullname: string
-  age: number | string
-  email: string
-  avatar: string
-}
 
 const ProfileSchema = z.object({
-  fullname: z.string().nonempty("Full name is required"),
+  name: z.string().nonempty("Full name is required"),
   age: z
     .number({ message: "Age is required" })
     .nonnegative("Age should be positive"),
@@ -24,21 +24,26 @@ const ProfileSchema = z.object({
 })
 
 const PersonalProfile = ({ nextStep }: Props) => {
-  const handleSubmit = (values: Form) => {
-    console.log(values)
-    // TODO: save the step data to context and localStorage
-    // move to the next step
+  const profile = useAppSelector((state) => state.onboarding.personalProfile)
+  const dispatch = useAppDispatch()
+
+  const handleSubmit = (values: PersonalProfile) => {
+    dispatch(updatePersonalProfile(values))
+    dispatch(updateCurrentStep(2))
     nextStep()
   }
+
+  const invalidForm = (values: PersonalProfile) =>
+    !values.name || !values.age || !values.email
 
   return (
     <CompWithHeading heading="Personal Profile">
       <Formik
         initialValues={{
-          fullname: "",
-          age: 0,
-          email: "",
-          avatar: "https://bit.ly/sage-adebayo",
+          name: profile.name,
+          age: profile.age,
+          email: profile.email,
+          profilePicture: "https://bit.ly/sage-adebayo",
         }}
         validate={zodValidator(ProfileSchema)}
         onSubmit={handleSubmit}
@@ -47,7 +52,6 @@ const PersonalProfile = ({ nextStep }: Props) => {
           errors,
           values,
           touched,
-          dirty,
           handleSubmit,
           handleChange,
           setFieldError,
@@ -56,30 +60,27 @@ const PersonalProfile = ({ nextStep }: Props) => {
           <form onSubmit={handleSubmit}>
             <VStack gap={4}>
               <Avatar.Root size="2xl">
-                <Avatar.Fallback name={values.fullname ?? "User"} />
-                <Avatar.Image src={values.avatar} />
+                <Avatar.Fallback name={values.name ?? "User"} />
+                <Avatar.Image src={values.profilePicture} />
               </Avatar.Root>
 
               <HStack gap={2}>
-                <Field.Root
-                  invalid={touched.fullname && !!errors.fullname}
-                  required
-                >
+                <Field.Root invalid={touched.name && !!errors.name} required>
                   <Field.Label>
                     Full Name <Field.RequiredIndicator />
                   </Field.Label>
                   <Input
                     placeholder="Full Name"
-                    name="fullname"
-                    value={values.fullname}
+                    name="name"
+                    value={values.name}
                     onChange={(evt) => {
-                      if (errors.fullname) setFieldError("fullname", "")
+                      if (errors.name) setFieldError("name", "")
                       handleChange(evt)
                     }}
                     onBlur={handleBlur}
-                    autoComplete="fullname"
+                    autoComplete="name"
                   />
-                  <Field.ErrorText>{errors.fullname}</Field.ErrorText>
+                  <Field.ErrorText>{errors.name}</Field.ErrorText>
                 </Field.Root>
 
                 <Field.Root invalid={touched.age && !!errors.age} required>
@@ -124,7 +125,7 @@ const PersonalProfile = ({ nextStep }: Props) => {
               <Button
                 type="submit"
                 width="full"
-                disabled={!dirty || hasErrors(errors)}
+                disabled={invalidForm(values) || hasErrors(errors)}
               >
                 Save
               </Button>
