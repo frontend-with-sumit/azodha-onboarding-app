@@ -1,4 +1,3 @@
-import type { ISong } from "@/components/SongsPicklist"
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "./../../node_modules/@reduxjs/toolkit/src/createAction"
 
@@ -9,7 +8,7 @@ export interface PersonalProfile {
   profilePicture: string
 }
 
-interface SongsList {
+export interface ISong {
   id: string
   name: string
 }
@@ -26,7 +25,7 @@ interface OnboardState {
   isCompleted: boolean
 
   personalProfile: PersonalProfile
-  songsList: SongsList[]
+  songsList: ISong[]
   paymentMethod: PaymentMethod
 }
 
@@ -62,7 +61,9 @@ const onboardSlice = createSlice({
       state.personalProfile = action.payload
     },
     addSong: (state, action: PayloadAction<ISong>) => {
-      state.songsList.push(action.payload)
+      const songsClone = [...state.songsList]
+      songsClone.push(action.payload)
+      state.songsList = songsClone
     },
     removeSong: (state, action: PayloadAction<string>) => {
       const songs = state.songsList.filter((song) => song.id !== action.payload)

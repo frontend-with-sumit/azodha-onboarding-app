@@ -3,6 +3,8 @@ import { Formik } from "formik"
 import { useState } from "react"
 import CompWithHeading from "./CompWithHeading"
 import Song from "./Song"
+import { useAppDispatch, useAppSelector } from "@/hooks/useActions"
+import { addSong, removeSong, type ISong } from "@/store/onboardSlice"
 
 interface Props {
   showBackBtn: boolean
@@ -14,28 +16,25 @@ interface Form {
   name: string
 }
 
-export interface ISong {
-  id: string
-  name: string
-}
-
 const SongsPicklist = ({ showBackBtn, nextStep, previousStep }: Props) => {
-  const [songs, setSongs] = useState<ISong[]>([])
+  const songsList = useAppSelector((state) => state.onboarding.songsList)
+  const dispatch = useAppDispatch()
+  const [songs, setSongs] = useState<ISong[]>(songsList)
 
   const handleSubmit = (values: Form) => {
-    console.log(values)
-
     if (!values.name) return
-    // onSuccess save the data to context and update Local Storage
     const newSong = {
       id: crypto.randomUUID(),
       name: values.name,
     }
     setSongs((prev) => [...prev, newSong])
+    dispatch(addSong(newSong))
   }
 
-  const handleRemoveSong = (songId: string) =>
+  const handleRemoveSong = (songId: string) => {
     setSongs((prev) => prev.filter((song) => song.id !== songId))
+    dispatch(removeSong(songId))
+  }
 
   return (
     <CompWithHeading
