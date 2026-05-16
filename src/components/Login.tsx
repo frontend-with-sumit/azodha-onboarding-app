@@ -1,18 +1,17 @@
+import { useAppDispatch, useAppSelector } from "@/hooks/useActions"
+import { login } from "@/store/authSlice"
 import { zodValidator } from "@/utils/zodValidator"
 import { Box, Button, Field, Input, VStack } from "@chakra-ui/react"
-import { Form, Formik } from "formik"
+import { Formik } from "formik"
 import { useNavigate } from "react-router"
 import { z } from "zod"
 import CompWithHeading from "./CompWithHeading"
 import { PasswordInput } from "./ui/password-input"
+import { useEffect } from "react"
 
 const CREDS = {
   username: "user123",
   password: "password123",
-}
-interface Form {
-  username: string
-  password: string
 }
 
 const LoginSchema = z
@@ -39,11 +38,17 @@ const LoginSchema = z
   })
 
 const Login = () => {
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const handleSubmit = (values: Form) => {
-    console.log(values)
-    // TODO:Update isAuth state in context and in localStorage
+  useEffect(() => {
+    if (isAuthenticated) navigate("/dashboard")
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated])
+
+  const handleSubmit = () => {
+    dispatch(login())
     navigate("/onboarding")
   }
 
@@ -54,7 +59,7 @@ const Login = () => {
           initialValues={{ username: "", password: "" }}
           validate={zodValidator(LoginSchema)}
           validateOnChange={false}
-          onSubmit={(values: Form) => handleSubmit(values)}
+          onSubmit={handleSubmit}
         >
           {({ errors, values, handleChange, handleSubmit, setFieldError }) => (
             <form onSubmit={handleSubmit}>
